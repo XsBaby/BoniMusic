@@ -17,11 +17,12 @@
         android:textColor="@color/black"
         android:textSize="20sp"/>
 
-    <ImageView
+    <CheckBox
         style="@style/top_bar"
         android:layout_marginLeft="150dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/ic_play_bar_btn_play"/>
+        android:background="@drawable/play_music"
+        android:button="@null"/>
 
     <ImageView
         style="@style/top_bar"

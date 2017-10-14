@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.xushuai.work.R;
 import com.xushuai.work.bean.OnlineMusic;
+import com.xushuai.work.utils.FileUtils;
 
 import java.util.List;
 
@@ -24,6 +25,9 @@ public class TitleApdater extends RecyclerView.Adapter<TitleApdater.BaseViewHold
     private Context context;
     private List<OnlineMusic> list;
     private MyItemClickListener mItemClickListener;
+    public static final int TYPE_HEADER = 0;
+    public static final int TYPE_NORMAL = 1;
+    private View mHeaderView;
 
     public TitleApdater(Context context, List<OnlineMusic> list) {
         this.context = context;
@@ -31,35 +35,69 @@ public class TitleApdater extends RecyclerView.Adapter<TitleApdater.BaseViewHold
     }
 
     @Override
+    public int getItemViewType(int position) {
 
+        if (mHeaderView == null) {
+            return TYPE_NORMAL;
+        }
+        if (position == 0) {
+            return TYPE_HEADER;
+        }
+
+        return TYPE_NORMAL;
+    }
+
+    public void setHeaderView(View headerView) {
+        mHeaderView = headerView;
+        notifyItemInserted(0);
+    }
+
+    public View getHeaderView() {
+        return mHeaderView;
+    }
+
+    @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (mHeaderView != null && viewType == TYPE_HEADER) {
+            return new BaseViewHolder(mHeaderView, mItemClickListener);
+        }
         BaseViewHolder baseViewHolder = new BaseViewHolder(LayoutInflater.from(context).inflate(R.layout.recy_item, parent, false), mItemClickListener);
         return baseViewHolder;
     }
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
-        holder.title.setText(list.get(position).getTitle());
-        holder.name.setText(list.get(position).getArtist_name());
-        holder.song.setText(list.get(position).getAlbum_title());
-        Glide.with(context).load(list.get(position).getPic_small()).into(holder.imageView);
+        if (getItemViewType(position) == TYPE_HEADER)
+            return;
+        final int pos = getRealPosition(holder);
+        final  OnlineMusic line = list.get(pos);
+        holder.title.setText(line.getTitle());
+        String attr = FileUtils.getArtistAndAlbum(line.getArtist_name(),line.getAlbum_title());
+        holder.name.setText(attr);
+        Glide.with(context).load(line.getPic_small()).into(holder.imageView);
+    }
+
+    public int getRealPosition(RecyclerView.ViewHolder holder) {
+        int position = holder.getLayoutPosition();
+        return mHeaderView == null ? position : position - 1;
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mHeaderView == null ? list.size() : list.size() + 1;
     }
 
     public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView title, name, song;
+        TextView title, name;
         ImageView imageView;
         private MyItemClickListener itemClickListener;
 
         public BaseViewHolder(View itemView, MyItemClickListener mItemClickListener) {
             super(itemView);
+            if (itemView == mHeaderView)
+                return;
             title = (TextView) itemView.findViewById(R.id.tv_second);
             name = (TextView) itemView.findViewById(R.id.tv_thred);
-            song = (TextView) itemView.findViewById(R.id.tv_song);
             imageView = (ImageView) itemView.findViewById(R.id.iv_img);
             this.itemClickListener = mItemClickListener;
             itemView.setOnClickListener(this);

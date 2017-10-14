@@ -2,29 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="vertical"
-    >
+              android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:layout_marginLeft="10dp">
 
         <ImageView
             android:id="@+id/iv_img"
-            android:layout_width="100dp"
-            android:layout_height="50dp"/>
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="5dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_song"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="加载中……"/>
 
             <TextView
                 android:id="@+id/tv_second"
@@ -38,11 +34,5 @@
                 android:layout_height="wrap_content"
                 android:text="加载中……"/>
         </LinearLayout>
-
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:background="#f00"/>
 </LinearLayout>

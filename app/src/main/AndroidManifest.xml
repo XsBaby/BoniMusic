@@ -22,6 +22,12 @@
         </activity>
         <activity android:name=".view.activity.WebActivity">
         </activity>
+
+        <service
+            android:name=".playview.MusicService"
+            android:enabled="true"
+            android:exported="false"
+            />
     </application>
 
 </manifest>

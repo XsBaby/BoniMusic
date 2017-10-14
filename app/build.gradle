@@ -30,8 +30,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.squareup.okhttp3:okhttp:3.9.0'
     compile 'com.wanjian:cockroach:0.0.5'
-    compile 'com.github.bumptech.glide:glide:4.0.0'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
     compile 'com.zhy:okhttputils:2.6.2'
     compile 'com.tencent.bugly:crashreport_upgrade:1.2.5'
     compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
 }

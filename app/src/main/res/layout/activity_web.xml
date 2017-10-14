@@ -1,39 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/activity_web"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/top_bar">
-
-        <ImageView
-            android:id="@+id/zjt"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/zjt"/>
-
-        <TextView
-            android:id="@+id/web_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@id/zjt"
-            android:text="百度热歌榜"
-            android:textColor="@color/white"
-            android:textSize="25sp"/>
-    </RelativeLayout>
+              android:orientation="vertical"
+    >
 
     <include layout="@layout/activity_online_music_list_header"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/web_list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/web_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>
+        <include
+            android:id="@+id/ll_loading"
+            layout="@layout/include_loading"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/ll_load_fail"
+            layout="@layout/include_load_fail"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>
