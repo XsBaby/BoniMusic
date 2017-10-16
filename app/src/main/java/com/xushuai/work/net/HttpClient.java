@@ -7,8 +7,10 @@ import android.util.Log;
 
 import com.xushuai.work.bean.ArtistInfo;
 import com.xushuai.work.bean.DownloadInfo;
+import com.xushuai.work.bean.MusicLrc;
 import com.xushuai.work.bean.OnlineMusicList;
 import com.xushuai.work.bean.SearchMusic;
+import com.xushuai.work.bean.Splash;
 import com.xushuai.work.utils.HttpInterceptor;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.BitmapCallback;
@@ -38,38 +40,67 @@ public class HttpClient {
     private static final String PARAM_TING_UID = "tinguid";
     private static final String PARAM_QUERY = "query";
 
+
+    public static void getSplash(@NonNull final HttpCallback<Splash> callback) {
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder().addInterceptor(new HttpInterceptor()).build();
+        OkHttpUtils
+                .initClient(okHttpClient)
+                .get().url(SPLASH_URL).build()
+                .execute(new JsonCallback<Splash>(Splash.class) {
+                    @Override
+                    public void onResponse(Splash response, int id) {
+                        callback.onSuccess(response);
+                    }
+
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        callback.onFail(e);
+                    }
+
+                    @Override
+                    public void onAfter(int id) {
+                        callback.onFinish();
+                    }
+                });
+    }
+
     public static void downloadFile(String url, String destFileDir, String destFileName, @Nullable final HttpCallback<File> callback) {
-        OkHttpUtils.get().url(url).build().execute(new FileCallBack(destFileDir, destFileName) {
-            @Override
-            public void inProgress(float progress, long total, int id) {
-            }
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder().addInterceptor(new HttpInterceptor()).build();
+        OkHttpUtils
+                .initClient(okHttpClient)
+                .get().url(url).build()
+                .execute(new FileCallBack(destFileDir, destFileName) {
+                    @Override
+                    public void inProgress(float progress, long total, int id) {
+                    }
 
-            @Override
-            public void onResponse(File file, int id) {
-                if (callback != null) {
-                    callback.onSuccess(file);
-                }
-            }
+                    @Override
+                    public void onResponse(File file, int id) {
+                        if (callback != null) {
+                            callback.onSuccess(file);
+                        }
+                    }
 
-            @Override
-            public void onError(Call call, Exception e, int id) {
-                if (callback != null) {
-                    callback.onFail(e);
-                }
-            }
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        if (callback != null) {
+                            callback.onFail(e);
+                        }
+                    }
 
-            @Override
-            public void onAfter(int id) {
-                if (callback != null) {
-                    callback.onFinish();
-                }
-            }
-        });
+                    @Override
+                    public void onAfter(int id) {
+                        if (callback != null) {
+                            callback.onFinish();
+                        }
+                    }
+                });
     }
 
     public static void getSongListInfo(String type, int size, int offset, @NonNull final HttpCallback<OnlineMusicList> callback) {
         OkHttpClient okHttpClient = new OkHttpClient().newBuilder().addInterceptor(new HttpInterceptor()).build();
-        OkHttpUtils.initClient(okHttpClient)
+        OkHttpUtils
+                .initClient(okHttpClient)
                 .get()
                 .url(BASE_URL)
                 .addParams(PARAM_METHOD, METHOD_GET_MUSIC_LIST)
@@ -81,7 +112,7 @@ public class HttpClient {
                 .execute(new JsonCallback<OnlineMusicList>(OnlineMusicList.class) {
                     @Override
                     public void onResponse(OnlineMusicList response, int id) {
-                        Log.e("OkHttpUtils", "onResponse: " + response);
+                        Log.e("HttpClient", "onResponse: "+response );
                         callback.onSuccess(response);
                     }
 
@@ -98,7 +129,10 @@ public class HttpClient {
     }
 
     public static void getMusicDownloadInfo(String songId, @NonNull final HttpCallback<DownloadInfo> callback) {
-        OkHttpUtils.get().url(BASE_URL)
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder().addInterceptor(new HttpInterceptor()).build();
+        OkHttpUtils
+                .initClient(okHttpClient)
+                .get().url(BASE_URL)
                 .addParams(PARAM_METHOD, METHOD_DOWNLOAD_MUSIC)
                 .addParams(PARAM_SONG_ID, songId)
                 .build()
@@ -126,6 +160,29 @@ public class HttpClient {
                     @Override
                     public void onResponse(Bitmap bitmap, int id) {
                         callback.onSuccess(bitmap);
+                    }
+
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        callback.onFail(e);
+                    }
+
+                    @Override
+                    public void onAfter(int id) {
+                        callback.onFinish();
+                    }
+                });
+    }
+
+    public static void getLrc(String songId, @NonNull final HttpCallback<MusicLrc> callback) {
+        OkHttpUtils.get().url(BASE_URL)
+                .addParams(PARAM_METHOD, METHOD_LRC)
+                .addParams(PARAM_SONG_ID, songId)
+                .build()
+                .execute(new JsonCallback<MusicLrc>(MusicLrc.class) {
+                    @Override
+                    public void onResponse(MusicLrc response, int id) {
+                        callback.onSuccess(response);
                     }
 
                     @Override

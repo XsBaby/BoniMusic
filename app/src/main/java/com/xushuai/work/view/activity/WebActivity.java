@@ -1,5 +1,6 @@
 package com.xushuai.work.view.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -20,6 +22,8 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.xushuai.work.R;
 import com.xushuai.work.applicon.Extras;
 import com.xushuai.work.applicon.LoadStateEnum;
+import com.xushuai.work.bean.DownloadInfo;
+import com.xushuai.work.bean.Music;
 import com.xushuai.work.bean.OnlineMusic;
 import com.xushuai.work.bean.OnlineMusicList;
 import com.xushuai.work.bean.SongListInfo;
@@ -43,12 +47,14 @@ public class WebActivity extends AppCompatActivity {
     private LinearLayout llLoadFail;
     private View vHeader;
     private SongListInfo mListInfo;
+    OnlineMusic onlineMusic;
     private OnlineMusicList mOnlineMusicList;
     private List<OnlineMusic> mMusicList = new ArrayList<>();
     private int mOffset = 0;
     private TitleApdater titApdater;
     private String file_link;
     private Boolean check = false;
+    private Music music;
     private Handler handler = new Handler();
     int dex;
     private MediaPlayer mediaPlayer;
@@ -86,6 +92,14 @@ public class WebActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 //用于传值播放音乐
+                onlineMusic = mMusicList.get(position);
+                play(onlineMusic);
+                Toast.makeText(WebActivity.this, onlineMusic.getTitle(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(WebActivity.this, SongActivity.class);
+                intent.putExtra("title", onlineMusic.getTitle());
+                intent.putExtra("songer_name", onlineMusic.getArtist_name());
+                intent.putExtra("song_id", onlineMusic.getSong_id());
+                startActivity(intent);
             }
         });
     }
@@ -142,5 +156,25 @@ public class WebActivity extends AppCompatActivity {
                     }
                 });
         titApdater.setHeaderView(vHeader);
+    }
+
+    private void play(OnlineMusic onlineMusic) {
+        music = new Music();
+        HttpClient.getMusicDownloadInfo(onlineMusic.getSong_id(), new HttpCallback<DownloadInfo>() {
+            @Override
+            public void onSuccess(DownloadInfo downloadInfo) {
+                if (downloadInfo == null || downloadInfo.getBitrate() == null) {
+                    onFail(null);
+                    return;
+                }
+                file_link = downloadInfo.getBitrate().getFile_link();
+                //getStart();
+            }
+
+            @Override
+            public void onFail(Exception e) {
+
+            }
+        });
     }
 }

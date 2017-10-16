@@ -26,8 +26,10 @@
         <service
             android:name=".playview.MusicService"
             android:enabled="true"
-            android:exported="false"
-            />
+            android:exported="false"/>
+
+        <activity android:name=".view.activity.SongActivity">
+        </activity>
     </application>
 
 </manifest>
