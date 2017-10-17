@@ -16,10 +16,12 @@ import android.widget.TextView;
 
 import com.xushuai.work.R;
 import com.xushuai.work.bean.DownloadInfo;
-import com.xushuai.work.bean.Lrc;
+import com.xushuai.work.bean.LrcBean;
 import com.xushuai.work.bean.MusicLrc;
 import com.xushuai.work.net.HttpCallback;
 import com.xushuai.work.net.HttpClient;
+import com.xushuai.work.utils.DefaultLrcBuilder;
+import com.xushuai.work.utils.ILrcBuilder;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -28,7 +30,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SongActivity extends AppCompatActivity implements View.OnClickListener {
+public class SongActivity extends AppCompatActivity implements View.OnClickListener, MediaPlayer.OnCompletionListener {
 
     private ImageView img;
     private ObjectAnimator discAnimation, needleAnimation;
@@ -42,12 +44,11 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
     private Handler handler = new Handler();
     private Timer timer;
     private String lrcContent;
-    private Lrc lrcHandler;
     private List<String> words = new ArrayList<>();//歌词集合
     private List<Integer> times = new ArrayList<>();//时间集合
     private Timer timerLrc;
     private TimerTask taskLrc;
-    private TextView tv;
+    private FirstLrcView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +91,10 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSuccess(MusicLrc lrc) {
                 lrcContent = lrc.getLrcContent();
-                words.add(lrcContent);
-                setTextLrc();
-                getLrc(lrcContent);
+                ILrcBuilder builder = new DefaultLrcBuilder();
+                List<LrcBean> lrcBeen = builder.getLrcRows(lrcContent);
+                Log.e("loadLrcData", "onSuccess: " + lrcBeen);
+                tv.setLrc(lrcBeen);
 
             }
 
@@ -111,7 +113,7 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
         textView = (TextView) findViewById(R.id.tv_music_text);
         nameText = (TextView) findViewById(R.id.name_text);
         sekText = (TextView) findViewById(R.id.music);
-        tv = (TextView) findViewById(R.id.lrc_text);
+        tv = (FirstLrcView) findViewById(R.id.lrc_text);
 
         setProessListen();
         img.setOnClickListener(this);
@@ -123,7 +125,6 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
         loadLrcData();
         textView.setText(name);
         nameText.setText(song_name);
-        tv.setSelected(true);
     }
 
     public void setProessListen() {
@@ -174,6 +175,10 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
             playing();
             if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.start();
+                handler.post(runnable);
+            } else {
+                mediaPlayer.pause();
+                handler.removeCallbacks(runnable);
             }
             smk.setProgress(0);
 
@@ -212,6 +217,11 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+
+    }
+
     class Take extends TimerTask {
 
         @Override
@@ -229,25 +239,10 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
                         String f1 = format.format(progress);
                         String f2 = format.format(mediaPlayer.getDuration());
                         sekText.setText(f1 + "/" + f2);
+                        tv.seekLrcToTime(progress);
                     }
                 });
             }
-        }
-    }
-
-    private void getLrc(String file) {
-        words.add(file);
-        //创建一个新的歌词对象
-//    lrcHandler = new Lrc();
-//    words = lrcHandler.getmWords();//拿出getmWords里面的数据放入words
-//    times = lrcHandler.getmTimes();
-        Log.e("getLrc===", "getLrc: " + words);
-        //给歌词设置开头
-        if (words.size() > 0) {
-            tv.setText(words.get(0));//将歌词集合words里面的输出拿出来传到sv里面显示
-
-        } else {
-            tv.setText("歌曲没有歌词，快下载最新歌词吧 。。。");
         }
     }
 
@@ -282,12 +277,25 @@ public class SongActivity extends AppCompatActivity implements View.OnClickListe
                 runOnUiThread(new TimerTask() {
                     @Override
                     public void run() {
-                        tv.setText(words.get(f));//从words里面取出第F个元素显示到tv
+//                        tv.setText(words.get(f));//从words里面取出第F个元素显示到tv
                     }
                 });
             }
         }
     }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer.isPlaying()) {
+                long time = mediaPlayer.getCurrentPosition();
+                //tv.updateTime(time);
+            }
+
+            handler.postDelayed(this, 100);
+        }
+    };
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

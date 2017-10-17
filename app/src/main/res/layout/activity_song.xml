@@ -60,7 +60,7 @@
             android:layout_width="280dp"
             android:layout_height="280dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="70dp"
             android:src="@drawable/play_album"/>
 
         <ImageView
@@ -72,10 +72,12 @@
             android:layout_marginRight="12dp"
             android:src="@drawable/play_needle"/>
 
-        <TextView
+        <com.xushuai.work.view.activity.FirstLrcView
             android:id="@+id/lrc_text"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/disc"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="30dp"
