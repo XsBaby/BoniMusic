@@ -15,11 +15,11 @@ import java.util.List;
 
 /**
  * 创建时间： 2017/10/15.
- * 创建人： Leilhang
+ * 创建人： 徐帅
  * 类的作用：
  */
 
-public class FirstLrcView extends View{
+public class FirstLrcView extends View {
     public final static String TAG = "LrcView";
     public final static int DISPLAY_MODE_NORMAL = 0;
 
@@ -68,7 +68,6 @@ public class FirstLrcView extends View{
         super(context, attrs);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setTextSize(mLrcFontSize);
-
     }
 
     /**
@@ -113,8 +112,10 @@ public class FirstLrcView extends View{
         }
 
     }
+
     /**
      * 设置歌词行集合
+     *
      * @param lrcRows
      */
     public void setLrc(List<LrcBean> lrcRows) {
@@ -139,9 +140,9 @@ public class FirstLrcView extends View{
     }
 
 
-
     /**
      * 播放的时候调用该方法滚动歌词，高亮正在播放的那句歌词
+     *
      * @param time
      */
     public void seekLrcToTime(long time) {
@@ -161,7 +162,7 @@ public class FirstLrcView extends View{
              *  正在播放的时间大于current行的歌词，而current行为最后一句歌词时，设置要高亮的行为current行
              */
             if ((time >= current.time && next != null && time < next.time)
-                   || (time > current.time && next == null)){
+                    || (time > current.time && next == null)) {
                 seekLrc(i, false);
                 return;
             }
